@@ -1,5 +1,6 @@
 from model import createModel
 from display import *
+from mip import OptimizationStatus
 import pygame
 
 
@@ -9,7 +10,8 @@ def runInterface():
     window = pygame.display.set_mode((1000,600))
     pygame.display.set_caption("CasquOpt")
     running = True
-    resultsOn = False
+    status = "noResults"
+    cost = 0
     page = 0
     shipping = []
 
@@ -30,26 +32,34 @@ def runInterface():
                 elif hitboxes[1].collidepoint(event.pos):
                     page = (page+1)%3
                 elif hitboxes[2].collidepoint(event.pos):
-                    resultsOn = True
                     model , shipping = createModel()
-                    model.optimize()
+                    status = model.optimize()
+                    if status == OptimizationStatus.OPTIMAL:
+                        cost = int(model.objective_value)
+                        status = "optimal found"
+                    else:
+                        status = "infeasible"
 
-        hitboxes = drawInterface(window,shipping,page,resultsOn)
+        hitboxes = drawInterface(window,shipping,page,status,cost)
         pygame.display.update()
 
     pygame.display.quit()
 
 
 
-def drawInterface(window,shipping,page,resultsOn):
+def drawInterface(window,shipping,page,status,cost):
     cellWidth = 80
     cellHeight = 50
     nameWidth = 220
 
     window.fill((70,215,250))
     drawTable(window,30,30,cellWidth,cellHeight,nameWidth,page)
-    if resultsOn:
+    if status == "optimal found":
         fillTable(window,30,30,cellWidth,cellHeight,nameWidth,page,shipping)
+        drawCost(window,650,500,status,cost)
+        drawFeasability(window,300,500,status)
+    elif status == "infeasible":
+        drawFeasability(window,300,500,status)
     text(window,"page "+str(page+1),20,(0,0,0),"midbottom",30+5+100,30+480)
     hitboxes = [text(window,"<<",20,(0,0,0),"bottomleft",30+5,30+480),text(window,">>",20,(0,0,0),"bottomright",30+5+200,30+480)]
     hitboxes += [drawButton(window,30,30)]

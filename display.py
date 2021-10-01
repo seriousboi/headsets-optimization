@@ -27,6 +27,25 @@ def text(window,message,size,color,anchor,x,y):
 
 
 
+def drawCost(window,x,y,status,cost):
+    pygame.draw.rect(window,(245,105,255),(x,y,300,50),0)
+    pygame.draw.rect(window,(150,150,150),(x,y,300,50),1)
+    text(window,"coût transport: "+str(cost)+"€",20,(0,0,0),"center",x+150,y+25)
+
+
+
+def drawFeasability(window,x,y,status):
+    if status == "infeasible":
+        pygame.draw.rect(window,(250,5,5),(x,y,250,50),0)
+        pygame.draw.rect(window,(50,50,50),(x,y,250,50),1)
+        text(window,"pas de solution",20,(0,0,0),"center",x+125,y+25)
+    else:
+        pygame.draw.rect(window,(135,235,190),(x,y,250,50),0)
+        pygame.draw.rect(window,(150,150,150),(x,y,250,50),1)
+        text(window,"solution réalisable",20,(0,0,0),"center",x+125,y+25)
+
+
+
 def drawButton(window,x,y):
     hitbox = pygame.draw.rect(window,(250,200,5),(x,y,180,50),0)
     pygame.draw.rect(window,(225,150,0),(x,y,180,50),2)
